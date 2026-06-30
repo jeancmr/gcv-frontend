@@ -1,4 +1,3 @@
-import { useAuth } from '@/auth/hooks/useAuth';
 import { NovedadesFilter } from '@/GvcPlatform/components/NovedadesFilter';
 import { NovedadesHeader } from '@/GvcPlatform/components/NovedadesHeader';
 import { NovedadesList } from '@/GvcPlatform/components/NovedadesList';
@@ -6,58 +5,28 @@ import { NovedadesStatsCards } from '@/GvcPlatform/components/NovedadesStatsCard
 import { NovedadesSupervisorBulkBar } from '@/GvcPlatform/components/NovedadesSupervisorBulkBar';
 import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
 import { useNovedadesFilter } from '@/GvcPlatform/hooks/useNovedadesFilter';
+import { useNovedadesPage } from '@/GvcPlatform/hooks/useNovedadesPage';
 import { useNovedadesStats } from '@/GvcPlatform/hooks/useNovedadesStats';
 import { initialStats } from '@/GvcPlatform/libs/initial-novedades-stats';
-import { NovedadEstado } from '@/interfaces/novedad.interface';
-import { UserRole } from '@/interfaces/user.interface';
-import { useState } from 'react';
 
 export const NovedadesPage = () => {
   const { inputRef, currentEstado, currentTipo, hasActiveFilters, search, setSearchParams } =
     useNovedadesFilter();
   const { data: novedades = [], error } = useNovedades(currentEstado, currentTipo, search);
   const { data: novedadesStats = initialStats } = useNovedadesStats();
-
-  const { user } = useAuth();
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-
-  const canExport = user?.rol === UserRole.RRHH;
-  const canCreate = user?.rol === UserRole.COLABORADOR;
-  const canApprove = user?.rol === UserRole.SUPERVISOR;
-  const showColaborador = user?.rol !== UserRole.COLABORADOR;
-
-  const pendingFiltered = novedades.filter((n) => n.estado === NovedadEstado.PENDIENTE).length;
-
-  const onSelect = (id: string) => {
-    setSelectedIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
-  const selectAllPending = () => {
-    const pendingIds = novedades
-      .filter((n) => n.estado === NovedadEstado.PENDIENTE)
-      .map((n) => n.id.toString());
-    setSelectedIds(new Set(pendingIds));
-  };
-
-  const handleClearSelection = () => {
-    setSelectedIds(new Set());
-  };
-
-  const handleBulkApprove = () => {
-    console.log(`Aprobar novedades con IDs: ${Array.from(selectedIds).join(', ')}`);
-  };
+  const {
+    canApprove,
+    pendingFiltered,
+    selectedIds,
+    onSelect,
+    selectAllPending,
+    handleBulkApprove,
+    handleClearSelection,
+  } = useNovedadesPage(novedades);
 
   return (
     <>
-      <NovedadesHeader canExport={canExport} canCreate={canCreate} userRole={user?.rol} />
+      <NovedadesHeader />
 
       <NovedadesStatsCards novedadesStats={novedadesStats} />
 
@@ -82,9 +51,6 @@ export const NovedadesPage = () => {
 
       <NovedadesList
         novedades={novedades}
-        canCreate={canCreate}
-        canApprove={canApprove}
-        showColaborador={showColaborador}
         selectedIds={selectedIds}
         onSelect={onSelect}
         errorMessage={error ? error.message : undefined}

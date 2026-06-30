@@ -1,14 +1,16 @@
+import { useAuth } from '@/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { UserRole } from '@/interfaces/user.interface';
 import { Download, Plus } from 'lucide-react';
 
-interface NovedadesHeaderProps {
-  canExport: boolean;
-  canCreate: boolean;
-  userRole?: UserRole;
-}
+export const NovedadesHeader = () => {
+  const { user } = useAuth();
 
-export const NovedadesHeader = ({ canExport, canCreate, userRole }: NovedadesHeaderProps) => {
+  const canExport = user?.rol === UserRole.RRHH;
+  const canCreate = user?.rol === UserRole.COLABORADOR;
+
+  const userRole = user?.rol;
+
   return (
     <header className="flex items-center justify-between mb-6 gap-3 flex-wrap">
       <div>

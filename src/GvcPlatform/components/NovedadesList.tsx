@@ -1,13 +1,13 @@
 import type { Novedad } from '@/interfaces/novedad.interface';
 import { NovedadesEmptyScreen } from './NovedadesEmptyScreen';
 import { NovedadesCard } from './NovedadesCard';
+import { useAuth } from '@/auth/hooks/useAuth';
+import { UserRole } from '@/interfaces/user.interface';
 
 interface NovedadesListProps {
   novedades: Novedad[];
   errorMessage?: string;
-  canApprove?: boolean;
   canCreate?: boolean;
-  showColaborador?: boolean;
   selectedIds?: Set<string>;
   onSelect?: (id: string) => void;
 }
@@ -15,12 +15,15 @@ interface NovedadesListProps {
 export const NovedadesList = ({
   novedades,
   errorMessage,
-  canApprove,
-  canCreate,
-  showColaborador,
   selectedIds = new Set(),
   onSelect,
 }: NovedadesListProps) => {
+  const { user } = useAuth();
+
+  const canApprove = user?.rol === UserRole.SUPERVISOR;
+  const canCreate = user?.rol === UserRole.COLABORADOR;
+  const showColaborador = user?.rol !== UserRole.COLABORADOR;
+
   return (
     <>
       {novedades.length === 0 ? (

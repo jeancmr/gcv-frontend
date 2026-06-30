@@ -19,7 +19,7 @@ export const CustomHeader = () => {
             <div className="hidden text-right sm:block">
               <div className="text-sm font-medium leading-tight">{user.nombre}</div>
               <div className="text-[11px] text-muted-foreground">
-                {user.rol.toLowerCase()} · {user.filialId}
+                {user.rol.toLowerCase()} · {user.filial.nombre}
               </div>
             </div>
             <div className="grid h-9 w-9 place-items-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">

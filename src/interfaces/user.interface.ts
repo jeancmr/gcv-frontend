@@ -1,3 +1,5 @@
+import type { Filial } from './filial.interface';
+
 export const UserRole = {
   COLABORADOR: 'COLABORADOR',
   SUPERVISOR: 'SUPERVISOR',
@@ -12,6 +14,7 @@ export interface User {
   nombre: string;
   rol: UserRole;
   filialId: number;
+  filial: Filial;
   creadaEn: Date;
   actualizadaEn: Date;
 }

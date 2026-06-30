@@ -9,8 +9,8 @@ interface NovedadesListProps {
   showColaborador?: boolean;
   selectedIds?: Set<string>;
   onSelect?: (id: string) => void;
-  onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onApprove?: (id: number) => void;
+  onReject?: (id: number) => void;
 }
 
 export const NovedadesList = ({

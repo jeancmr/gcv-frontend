@@ -1,7 +1,7 @@
 import { gvcPlatformApi } from '@/api/gvc-platform.api';
 import type { Novedad } from '@/interfaces/novedad.interface';
 
-export const getNovedades = async (
+export const getNovedadesAction = async (
   estado: string,
   tipo: string,
   search: string,

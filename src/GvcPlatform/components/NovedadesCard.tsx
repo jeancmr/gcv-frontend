@@ -8,8 +8,8 @@ interface NovedadCardProps {
   showColaborador?: boolean;
   selected?: boolean;
   onSelect?: (id: string) => void;
-  onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onApprove?: (id: number) => void;
+  onReject?: (id: number) => void;
   canApprove?: boolean;
 }
 
@@ -110,14 +110,14 @@ export const NovedadesCard = ({
           <div className="flex gap-2 justify-end">
             <Button
               size="xs"
-              onClick={() => onReject?.(novedad.id.toString())}
+              onClick={() => onReject?.(novedad.id)}
               className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
             >
               Rechazar
             </Button>
             <Button
               size="xs"
-              onClick={() => onApprove?.(novedad.id.toString())}
+              onClick={() => onApprove?.(novedad.id)}
               className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
             >
               Aprobar

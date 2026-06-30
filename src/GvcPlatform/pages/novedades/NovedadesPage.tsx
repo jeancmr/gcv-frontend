@@ -1,4 +1,5 @@
 import { useAuth } from '@/auth/hooks/useAuth';
+import { updateNovedadAction } from '@/GvcPlatform/actions/update-novedad-estado.action';
 import { NovedadesFilter } from '@/GvcPlatform/components/NovedadesFilter';
 import { NovedadesHeader } from '@/GvcPlatform/components/NovedadesHeader';
 import { NovedadesList } from '@/GvcPlatform/components/NovedadesList';
@@ -36,12 +37,20 @@ export const NovedadesPage = () => {
     });
   };
 
-  const onApprove = (id: string) => {
-    console.log(`Aprobar novedad con ID: ${id}`);
+  const onApprove = async (id: number) => {
+    try {
+      await updateNovedadAction(id, 'aprobar');
+    } catch (error) {
+      console.error(`Error al aprobar la novedad con ID ${id}:`, error);
+    }
   };
 
-  const onReject = (id: string) => {
-    console.log(`Rechazar novedad con ID: ${id}`);
+  const onReject = async (id: number) => {
+    try {
+      await updateNovedadAction(id, 'rechazar');
+    } catch (error) {
+      console.error(`Error al rechazar la novedad con ID ${id}:`, error);
+    }
   };
 
   const selectAllPending = () => {

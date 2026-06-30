@@ -5,7 +5,7 @@ interface Response {
   message: string;
 }
 
-type Action = 'enviar' | 'aprobar' | 'rechazar';
+export type Action = 'enviar' | 'aprobar' | 'rechazar';
 
 export const updateNovedadAction = async (id: number, action: Action): Promise<Response> => {
   try {

@@ -9,8 +9,6 @@ interface NovedadesListProps {
   showColaborador?: boolean;
   selectedIds?: Set<string>;
   onSelect?: (id: string) => void;
-  onApprove?: (id: number) => void;
-  onReject?: (id: number) => void;
 }
 
 export const NovedadesList = ({
@@ -20,8 +18,6 @@ export const NovedadesList = ({
   showColaborador,
   selectedIds = new Set(),
   onSelect,
-  onApprove,
-  onReject,
 }: NovedadesListProps) => {
   return (
     <>
@@ -36,8 +32,6 @@ export const NovedadesList = ({
               showColaborador={showColaborador}
               selected={selectedIds.has(novedad.id.toString())}
               onSelect={canApprove ? onSelect : undefined}
-              onApprove={canApprove ? onApprove : undefined}
-              onReject={canApprove ? onReject : undefined}
               canApprove={canApprove}
             />
           ))}

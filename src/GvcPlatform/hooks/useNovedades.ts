@@ -1,24 +1,30 @@
-import type { Novedad } from '@/interfaces/novedad.interface';
-import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getNovedadesAction } from '../actions/get-novedades.action';
+import { updateNovedadAction, type Action } from '../actions/update-novedad-estado.action';
+
+type UpdateNovedadParams = {
+  id: number;
+  action: Action;
+};
 
 export const useNovedades = (estado: string, tipo: string, search: string) => {
-  const [novedades, setNovedades] = useState<Novedad[]>([]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchNovedades = async () => {
-      try {
-        const novedades = await getNovedadesAction(estado, tipo, search);
-        setNovedades(novedades);
-      } catch (error) {
-        console.error('Error fetching novedades:', error);
-      }
-    };
+  const query = useQuery({
+    queryKey: ['novedades', { estado, tipo, search }],
+    queryFn: () => getNovedadesAction(estado, tipo, search),
+    staleTime: 1000 * 6 * 5,
+  });
 
-    fetchNovedades();
-  }, [estado, tipo, search]);
+  const updateNovedadMutation = useMutation({
+    mutationFn: ({ id, action }: UpdateNovedadParams) => updateNovedadAction(id, action),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['novedades'] });
+    },
+  });
 
   return {
-    novedades,
+    ...query,
+    novedadMutation: updateNovedadMutation,
   };
 };

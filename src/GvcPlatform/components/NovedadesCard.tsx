@@ -2,14 +2,15 @@ import { StatusBadge, TipoBadge } from '@/components/custom/CustomStatusBadge';
 import { Button } from '@/components/ui/button';
 import { NovedadEstado, type Novedad } from '@/interfaces/novedad.interface';
 import { Calendar } from 'lucide-react';
+import { useNovedades } from '../hooks/useNovedades';
+import { useNovedadesFilter } from '../hooks/useNovedadesFilter';
+import { toast } from 'sonner';
 
 interface NovedadCardProps {
   novedad: Novedad;
   showColaborador?: boolean;
   selected?: boolean;
   onSelect?: (id: string) => void;
-  onApprove?: (id: number) => void;
-  onReject?: (id: number) => void;
   canApprove?: boolean;
 }
 
@@ -27,9 +28,38 @@ export const NovedadesCard = ({
   selected,
   canApprove,
   onSelect,
-  onApprove,
-  onReject,
 }: NovedadCardProps) => {
+  const { currentEstado, currentTipo, search } = useNovedadesFilter();
+
+  const { novedadMutation } = useNovedades(currentEstado, currentTipo, search);
+
+  const onApprove = async (id: number) => {
+    novedadMutation.mutate(
+      { id, action: 'aprobar' },
+      {
+        onSuccess: () => {
+          toast.success(`Novedad aprobada correctamente.`);
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      },
+    );
+  };
+
+  const onReject = async (id: number) => {
+    novedadMutation.mutate(
+      { id, action: 'rechazar' },
+      {
+        onSuccess: () => {
+          toast.success(`Novedad rechazada correctamente.`);
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      },
+    );
+  };
   return (
     <article
       className={`rounded-lg border bg-card transition-all ${

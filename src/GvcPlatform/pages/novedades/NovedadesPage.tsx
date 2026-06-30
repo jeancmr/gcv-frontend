@@ -1,5 +1,4 @@
 import { useAuth } from '@/auth/hooks/useAuth';
-import { updateNovedadAction } from '@/GvcPlatform/actions/update-novedad-estado.action';
 import { NovedadesFilter } from '@/GvcPlatform/components/NovedadesFilter';
 import { NovedadesHeader } from '@/GvcPlatform/components/NovedadesHeader';
 import { NovedadesList } from '@/GvcPlatform/components/NovedadesList';
@@ -10,12 +9,11 @@ import { useNovedadesFilter } from '@/GvcPlatform/hooks/useNovedadesFilter';
 import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { UserRole } from '@/interfaces/user.interface';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 export const NovedadesPage = () => {
   const { inputRef, currentEstado, currentTipo, hasActiveFilters, search, setSearchParams } =
     useNovedadesFilter();
-  const { novedades } = useNovedades(currentEstado, currentTipo, search);
+  const { data: novedades = [], error } = useNovedades(currentEstado, currentTipo, search);
   const { user } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -36,26 +34,6 @@ export const NovedadesPage = () => {
       }
       return newSet;
     });
-  };
-
-  const onApprove = (id: number) => {
-    updateNovedadAction(id, 'aprobar')
-      .then(() => {
-        toast.success(`Novedad aprobada correctamente.`);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
-
-  const onReject = async (id: number) => {
-    updateNovedadAction(id, 'rechazar')
-      .then(() => {
-        toast.success(`Novedad rechazada correctamente.`);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
   };
 
   const selectAllPending = () => {
@@ -98,6 +76,8 @@ export const NovedadesPage = () => {
         />
       )}
 
+      {error && <p className="text-red-500">Error: {error.message}</p>}
+
       <NovedadesList
         novedades={novedades}
         canCreate={canCreate}
@@ -105,8 +85,6 @@ export const NovedadesPage = () => {
         showColaborador={showColaborador}
         selectedIds={selectedIds}
         onSelect={onSelect}
-        onApprove={onApprove}
-        onReject={onReject}
       />
     </>
   );

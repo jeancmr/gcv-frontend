@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '../hooks/useAuth';
+import { toast } from 'sonner';
 
 export const RightLoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,11 +21,11 @@ export const RightLoginForm = () => {
     const password = formData.get('password') as string;
 
     login(email, password)
-      .then((response) => {
-        console.log('Login successful:', response);
+      .then(() => {
+        toast.success('Inicio de sesión exitoso');
       })
       .catch((error) => {
-        console.error('Login failed:', error);
+        toast.error(error.message);
       })
       .finally(() => {
         setIsLoading(false);

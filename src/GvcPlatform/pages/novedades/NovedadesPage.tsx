@@ -10,6 +10,7 @@ import { useNovedadesFilter } from '@/GvcPlatform/hooks/useNovedadesFilter';
 import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { UserRole } from '@/interfaces/user.interface';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const NovedadesPage = () => {
   const { inputRef, currentEstado, currentTipo, hasActiveFilters, search, setSearchParams } =
@@ -37,20 +38,24 @@ export const NovedadesPage = () => {
     });
   };
 
-  const onApprove = async (id: number) => {
-    try {
-      await updateNovedadAction(id, 'aprobar');
-    } catch (error) {
-      console.error(`Error al aprobar la novedad con ID ${id}:`, error);
-    }
+  const onApprove = (id: number) => {
+    updateNovedadAction(id, 'aprobar')
+      .then(() => {
+        toast.success(`Novedad aprobada correctamente.`);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
   };
 
   const onReject = async (id: number) => {
-    try {
-      await updateNovedadAction(id, 'rechazar');
-    } catch (error) {
-      console.error(`Error al rechazar la novedad con ID ${id}:`, error);
-    }
+    updateNovedadAction(id, 'rechazar')
+      .then(() => {
+        toast.success(`Novedad rechazada correctamente.`);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
   };
 
   const selectAllPending = () => {

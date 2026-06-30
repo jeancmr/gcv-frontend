@@ -1,14 +1,15 @@
 import { useState, type SubmitEvent } from 'react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { GCVLogo } from '@/components/custom/GCVLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
-import { loginAction } from '../actions/login.action';
+import { useAuth } from '../hooks/useAuth';
 
 export const RightLoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
 
   const handleSignIn = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,7 +19,7 @@ export const RightLoginForm = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    loginAction(email, password)
+    login(email, password)
       .then((response) => {
         console.log('Login successful:', response);
       })

@@ -1,6 +1,11 @@
 import { RouterProvider } from 'react-router';
 import { appRouter } from './app.router';
+import { AuthProvider } from './auth/context/AuthProvider';
 
 export const GvcPlatformApp = () => {
-  return <RouterProvider router={appRouter} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={appRouter} />
+    </AuthProvider>
+  );
 };

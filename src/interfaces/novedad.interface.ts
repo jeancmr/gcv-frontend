@@ -21,9 +21,9 @@ export interface Novedad {
   id: number;
   tipo: NovedadTipo;
   estado: NovedadEstado;
-  fechaInicio: Date;
-  fechaFin?: Date;
+  fechaInicio: string;
+  fechaFin?: string;
   descripcion: string;
-  creadaEn: Date;
-  actualizadaEn: Date;
+  creadaEn: string;
+  actualizadaEn: string;
 }

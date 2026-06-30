@@ -1,29 +1,29 @@
-import { useAuth } from '@/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { UserRole } from '@/interfaces/user.interface';
 import { Download, Plus } from 'lucide-react';
 
-export const NovedadesHeader = () => {
-  const { user } = useAuth();
-  const canExport = user?.rol === UserRole.RRHH;
-  const canCreate = user?.rol === UserRole.COLABORADOR;
+interface NovedadesHeaderProps {
+  canExport: boolean;
+  canCreate: boolean;
+  userRole?: UserRole;
+}
 
+export const NovedadesHeader = ({ canExport, canCreate, userRole }: NovedadesHeaderProps) => {
   return (
     <header className="flex items-center justify-between mb-6 gap-3 flex-wrap">
       <div>
         <h1 className="text-xl font-semibold text-foreground">
-          {user?.rol === UserRole.COLABORADOR && 'Mis novedades'}
-          {user?.rol === UserRole.SUPERVISOR && 'Aprobación de novedades'}
-          {user?.rol === UserRole.RRHH && 'Novedades de la filial'}
+          {userRole === UserRole.COLABORADOR && 'Mis novedades'}
+          {userRole === UserRole.SUPERVISOR && 'Aprobación de novedades'}
+          {userRole === UserRole.RRHH && 'Novedades de la filial'}
         </h1>
 
         <p className="text-sm text-muted-foreground mt-0.5">
-          {user?.rol === UserRole.COLABORADOR &&
-            'Registro y seguimiento de tus novedades de nómina'}
+          {userRole === UserRole.COLABORADOR && 'Registro y seguimiento de tus novedades de nómina'}
 
-          {user?.rol === UserRole.SUPERVISOR && 'Revisión y aprobación de novedades del equipo'}
+          {userRole === UserRole.SUPERVISOR && 'Revisión y aprobación de novedades del equipo'}
 
-          {user?.rol === UserRole.RRHH && 'Consulta y exportación de novedades para nómina'}
+          {userRole === UserRole.RRHH && 'Consulta y exportación de novedades para nómina'}
         </p>
       </div>
       <div className="flex items-center gap-2">

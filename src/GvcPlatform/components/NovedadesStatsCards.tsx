@@ -52,7 +52,7 @@ export const NovedadesStatsCards = ({ novedades }: StatsCardsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
       {stats.map((stat) => (
         <div key={stat.label} className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between mb-3">

@@ -30,17 +30,17 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const checkAuthStatus = async () => {
     const token = localStorage.getItem('token');
-    setAuthStatus('checking');
 
     if (!token) {
       logout();
-      return;
+      throw new Error('No token');
     }
 
     try {
       const user = await checkAuthAction();
       setUser(user);
       setAuthStatus('authenticated');
+      return user;
     } catch {
       logout();
     }

@@ -1,3 +1,9 @@
+import { NovedadesHeader } from '@/GvcPlatform/components/NovedadesHeader';
+
 export const NovedadesPage = () => {
-  return <div>NovedadesPage</div>;
+  return (
+    <>
+      <NovedadesHeader />
+    </>
+  );
 };

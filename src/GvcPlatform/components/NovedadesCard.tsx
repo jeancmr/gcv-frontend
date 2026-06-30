@@ -1,4 +1,5 @@
 import { StatusBadge, TipoBadge } from '@/components/custom/CustomStatusBadge';
+import { Button } from '@/components/ui/button';
 import { NovedadEstado, type Novedad } from '@/interfaces/novedad.interface';
 import { Calendar } from 'lucide-react';
 
@@ -29,8 +30,6 @@ export const NovedadesCard = ({
   onApprove,
   onReject,
 }: NovedadCardProps) => {
-  const namename = 'Orlando melendez';
-
   return (
     <article
       className={`rounded-lg border bg-card transition-all ${
@@ -72,16 +71,18 @@ export const NovedadesCard = ({
               style={{ background: 'oklch(0.35 0.1 250)' }}
               aria-hidden="true"
             >
-              {namename
+              {novedad.solicitante.nombre
                 .split(' ')
                 .map((n) => n[0])
                 .join('')
                 .slice(0, 2)}
             </div>
             <div>
-              <span className="text-sm font-medium text-foreground">{namename}</span>
+              <span className="text-sm font-medium text-foreground">
+                {novedad.solicitante.nombre}
+              </span>
               <span className="text-xs text-muted-foreground ml-1.5">
-                · {namename.toLowerCase().replace(/\s+/g, '.')}@example.com
+                · {novedad.solicitante.rol}
               </span>
             </div>
           </div>
@@ -106,19 +107,21 @@ export const NovedadesCard = ({
 
         {/* Action buttons — Supervisor only */}
         {canApprove && novedad.estado === NovedadEstado.PENDIENTE && (
-          <div className="flex gap-2">
-            <button
+          <div className="flex gap-2 justify-end">
+            <Button
+              size="xs"
               onClick={() => onReject?.(novedad.id.toString())}
               className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
             >
               Rechazar
-            </button>
-            <button
+            </Button>
+            <Button
+              size="xs"
               onClick={() => onApprove?.(novedad.id.toString())}
               className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
             >
               Aprobar
-            </button>
+            </Button>
           </div>
         )}
       </div>

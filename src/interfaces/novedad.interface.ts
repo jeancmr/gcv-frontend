@@ -1,3 +1,5 @@
+import type { UserRole } from './user.interface';
+
 export const NovedadEstado = {
   BORRADOR: 'BORRADOR',
   PENDIENTE: 'PENDIENTE',
@@ -17,6 +19,12 @@ export const NovedadTipo = {
 
 export type NovedadTipo = (typeof NovedadTipo)[keyof typeof NovedadTipo];
 
+interface NovedadSolicitante {
+  id: number;
+  nombre: string;
+  rol: UserRole;
+}
+
 export interface Novedad {
   id: number;
   tipo: NovedadTipo;
@@ -24,6 +32,7 @@ export interface Novedad {
   fechaInicio: string;
   fechaFin?: string;
   descripcion: string;
+  solicitante: NovedadSolicitante;
   creadaEn: string;
   actualizadaEn: string;
 }

@@ -5,12 +5,15 @@ import { NovedadesList } from '@/GvcPlatform/components/NovedadesList';
 import { NovedadesStatsCards } from '@/GvcPlatform/components/NovedadesStatsCards';
 import { NovedadesSupervisorBulkBar } from '@/GvcPlatform/components/NovedadesSupervisorBulkBar';
 import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
+import { useNovedadesFilter } from '@/GvcPlatform/hooks/useNovedadesFilter';
 import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { UserRole } from '@/interfaces/user.interface';
 import { useState } from 'react';
 
 export const NovedadesPage = () => {
-  const { novedades } = useNovedades();
+  const { inputRef, currentEstado, currentTipo, hasActiveFilters, search, setSearchParams } =
+    useNovedadesFilter();
+  const { novedades } = useNovedades(currentEstado, currentTipo, search);
   const { user } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -62,7 +65,14 @@ export const NovedadesPage = () => {
 
       <NovedadesStatsCards novedades={novedades} />
 
-      <NovedadesFilter />
+      <NovedadesFilter
+        hasActiveFilters={hasActiveFilters}
+        inputRef={inputRef}
+        currentEstado={currentEstado}
+        currentTipo={currentTipo}
+        search={search}
+        setSearchParams={setSearchParams}
+      />
 
       {canApprove && pendingFiltered > 0 && (
         <NovedadesSupervisorBulkBar

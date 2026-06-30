@@ -6,20 +6,46 @@ import {
   type NovedadTipo as NovedadTipoType,
 } from '../../interfaces/novedad.interface';
 import { Input } from '@/components/ui/input';
-import { useNovedadesFilter } from '../hooks/useNovedadesFilter';
+import type { RefObject } from 'react';
+import type { SetURLSearchParams } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/auth/hooks/useAuth';
+import { UserRole } from '@/interfaces/user.interface';
 
-export const NovedadesFilter = () => {
-  const {
-    inputRef,
-    clearFilters,
-    currentEstado,
-    currentTipo,
-    handleEstadoChange,
-    handleKeyDown,
-    handleTipoChange,
-    hasActiveFilters,
-    search,
-  } = useNovedadesFilter();
+interface NovedadesFilterProps {
+  inputRef: RefObject<HTMLInputElement | null>;
+  currentEstado: NovedadEstadoType;
+  currentTipo: NovedadTipoType;
+  search: string;
+  hasActiveFilters: boolean;
+  setSearchParams: SetURLSearchParams;
+}
+
+export const NovedadesFilter = ({
+  inputRef,
+  currentEstado,
+  currentTipo,
+  search,
+  hasActiveFilters,
+  setSearchParams,
+}: NovedadesFilterProps) => {
+  const { user } = useAuth();
+  const rol = user?.rol;
+
+  const placeholderMessage = `Buscar por ${rol === UserRole.COLABORADOR ? 'descripción' : 'colaborador'}`;
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const inputElement = inputRef.current;
+
+    if (event.key === 'Enter' && inputElement) {
+      const cleanedInput = inputElement.value.trim();
+
+      setSearchParams((prev) => {
+        prev.set('search', cleanedInput);
+        return prev;
+      });
+    }
+  };
 
   return (
     <div className="mb-4 flex flex-wrap gap-3 items-center">
@@ -30,8 +56,8 @@ export const NovedadesFilter = () => {
           aria-hidden="true"
         />
         <Input
-          placeholder="Buscar por colaborador, descripción o ID…"
           ref={inputRef}
+          placeholder={placeholderMessage}
           defaultValue={search}
           onKeyDown={handleKeyDown}
           className="w-full rounded-lg border border-border bg-card pl-9 pr-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
@@ -44,9 +70,15 @@ export const NovedadesFilter = () => {
           value={currentEstado}
           aria-label="Filtrar por estado"
           className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          onChange={(e) => handleEstadoChange(e.target.value as NovedadEstadoType)}
+          onChange={(e) => {
+            const newEstado = e.target.value as NovedadEstadoType;
+            setSearchParams((prev) => {
+              prev.set('estado', newEstado);
+              return prev;
+            });
+          }}
         >
-          <option value="todas">Todos los estados</option>
+          <option value="">Todos los estados</option>
           <option value={NovedadEstado.APROBADA}>Aprobadas</option>
           <option value={NovedadEstado.BORRADOR}>Borradores</option>
           <option value={NovedadEstado.PENDIENTE}>Pendientes</option>
@@ -58,11 +90,17 @@ export const NovedadesFilter = () => {
         <SlidersHorizontal size={13} className="text-muted-foreground" aria-hidden="true" />
         <select
           value={currentTipo}
-          onChange={(e) => handleTipoChange(e.target.value as NovedadTipoType)}
+          onChange={(e) => {
+            const newTipo = e.target.value as NovedadTipoType;
+            setSearchParams((prev) => {
+              prev.set('tipo', newTipo);
+              return prev;
+            });
+          }}
           aria-label="Filtrar por tipo"
           className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         >
-          <option value="todos">Todos los tipos</option>
+          <option value="">Todos los tipos</option>
           <option value={NovedadTipo.ACTUALIZACION_DATOS}>Actualización de datos</option>
           <option value={NovedadTipo.AUSENTISMO}>Ausentismo</option>
           <option value={NovedadTipo.HORAS_EXTRA}>Horas extra</option>
@@ -72,14 +110,20 @@ export const NovedadesFilter = () => {
       </div>
 
       {hasActiveFilters && (
-        <button
-          onClick={clearFilters}
+        <Button
+          onClick={() => {
+            if (inputRef.current) {
+              inputRef.current.value = '';
+            }
+            const newParams = new URLSearchParams();
+            setSearchParams(newParams);
+          }}
           className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           aria-label="Eliminar filtros activos"
         >
           <X size={13} aria-hidden="true" />
           Limpiar filtros
-        </button>
+        </Button>
       )}
     </div>
   );

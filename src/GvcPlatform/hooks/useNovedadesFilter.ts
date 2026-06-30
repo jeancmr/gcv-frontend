@@ -62,8 +62,6 @@ export const useNovedadesFilter = () => {
     inputRef,
     search,
     clearFilters,
-    handleEstadoChange,
-    handleKeyDown,
-    handleTipoChange,
+    setSearchParams,
   };
 };

@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router';
+import { CustomHeader } from '@/components/custom/CustomHeader';
 
 export const NovedadLayout = () => {
   return (
     <>
-      <header>header</header>
+      <CustomHeader />
       <Outlet />
     </>
   );

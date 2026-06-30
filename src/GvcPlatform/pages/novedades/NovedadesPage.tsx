@@ -3,17 +3,58 @@ import { NovedadesFilter } from '@/GvcPlatform/components/NovedadesFilter';
 import { NovedadesHeader } from '@/GvcPlatform/components/NovedadesHeader';
 import { NovedadesList } from '@/GvcPlatform/components/NovedadesList';
 import { NovedadesStatsCards } from '@/GvcPlatform/components/NovedadesStatsCards';
+import { NovedadesSupervisorBulkBar } from '@/GvcPlatform/components/NovedadesSupervisorBulkBar';
 import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
+import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { UserRole } from '@/interfaces/user.interface';
+import { useState } from 'react';
 
 export const NovedadesPage = () => {
   const { novedades } = useNovedades();
   const { user } = useAuth();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const canExport = user?.rol === UserRole.RRHH;
   const canCreate = user?.rol === UserRole.COLABORADOR;
   const canApprove = user?.rol === UserRole.SUPERVISOR;
   const showColaborador = user?.rol !== UserRole.COLABORADOR;
+
+  const pendingFiltered = novedades.filter((n) => n.estado === NovedadEstado.PENDIENTE).length;
+
+  const onSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const onApprove = (id: string) => {
+    console.log(`Aprobar novedad con ID: ${id}`);
+  };
+
+  const onReject = (id: string) => {
+    console.log(`Rechazar novedad con ID: ${id}`);
+  };
+
+  const selectAllPending = () => {
+    const pendingIds = novedades
+      .filter((n) => n.estado === NovedadEstado.PENDIENTE)
+      .map((n) => n.id.toString());
+    setSelectedIds(new Set(pendingIds));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkApprove = () => {
+    console.log(`Aprobar novedades con IDs: ${Array.from(selectedIds).join(', ')}`);
+  };
 
   return (
     <>
@@ -23,11 +64,25 @@ export const NovedadesPage = () => {
 
       <NovedadesFilter />
 
+      {canApprove && pendingFiltered > 0 && (
+        <NovedadesSupervisorBulkBar
+          selectedIds={selectedIds}
+          pendingFiltered={pendingFiltered}
+          selectAllPending={selectAllPending}
+          onClearSelection={handleClearSelection}
+          onBulkApprove={handleBulkApprove}
+        />
+      )}
+
       <NovedadesList
         novedades={novedades}
         canCreate={canCreate}
         canApprove={canApprove}
         showColaborador={showColaborador}
+        selectedIds={selectedIds}
+        onSelect={onSelect}
+        onApprove={onApprove}
+        onReject={onReject}
       />
     </>
   );

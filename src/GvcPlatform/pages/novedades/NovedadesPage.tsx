@@ -76,8 +76,6 @@ export const NovedadesPage = () => {
         />
       )}
 
-      {error && <p className="text-red-500">Error: {error.message}</p>}
-
       <NovedadesList
         novedades={novedades}
         canCreate={canCreate}
@@ -85,6 +83,7 @@ export const NovedadesPage = () => {
         showColaborador={showColaborador}
         selectedIds={selectedIds}
         onSelect={onSelect}
+        errorMessage={error ? error.message : undefined}
       />
     </>
   );

@@ -80,7 +80,9 @@ export const NovedadesFilter = ({
         >
           <option value="">Todos los estados</option>
           <option value={NovedadEstado.APROBADA}>Aprobadas</option>
-          <option value={NovedadEstado.BORRADOR}>Borradores</option>
+          {rol === UserRole.COLABORADOR && (
+            <option value={NovedadEstado.BORRADOR}>Borradores</option>
+          )}
           <option value={NovedadEstado.PENDIENTE}>Pendientes</option>
           <option value={NovedadEstado.RECHAZADA}>Rechazadas</option>
         </select>

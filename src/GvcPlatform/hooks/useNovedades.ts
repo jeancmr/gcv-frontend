@@ -14,6 +14,7 @@ export const useNovedades = (estado: string, tipo: string, search: string) => {
     queryKey: ['novedades', { estado, tipo, search }],
     queryFn: () => getNovedadesAction(estado, tipo, search),
     staleTime: 1000 * 6 * 5,
+    retry: false,
   });
 
   const updateNovedadMutation = useMutation({

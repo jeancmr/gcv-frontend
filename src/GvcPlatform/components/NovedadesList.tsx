@@ -4,6 +4,7 @@ import { NovedadesCard } from './NovedadesCard';
 
 interface NovedadesListProps {
   novedades: Novedad[];
+  errorMessage?: string;
   canApprove?: boolean;
   canCreate?: boolean;
   showColaborador?: boolean;
@@ -13,6 +14,7 @@ interface NovedadesListProps {
 
 export const NovedadesList = ({
   novedades,
+  errorMessage,
   canApprove,
   canCreate,
   showColaborador,
@@ -22,7 +24,7 @@ export const NovedadesList = ({
   return (
     <>
       {novedades.length === 0 ? (
-        <NovedadesEmptyScreen canCreate={canCreate} />
+        <NovedadesEmptyScreen canCreate={canCreate} errorMessage={errorMessage} />
       ) : (
         <div className="space-y-3">
           {novedades.map((novedad) => (

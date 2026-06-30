@@ -1,3 +1,4 @@
+import { NovedadesFilter } from '@/GvcPlatform/components/NovedadesFilter';
 import { NovedadesHeader } from '@/GvcPlatform/components/NovedadesHeader';
 import { NovedadesStatsCards } from '@/GvcPlatform/components/NovedadesStatsCards';
 import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
@@ -9,6 +10,8 @@ export const NovedadesPage = () => {
     <>
       <NovedadesHeader />
       <NovedadesStatsCards novedades={novedades} />
+
+      <NovedadesFilter />
     </>
   );
 };

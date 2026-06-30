@@ -7,9 +7,19 @@ export const NovedadEstado = {
 
 export type NovedadEstado = (typeof NovedadEstado)[keyof typeof NovedadEstado];
 
+export const NovedadTipo = {
+  AUSENTISMO: 'AUSENTISMO',
+  PERMISO: 'PERMISO',
+  HORAS_EXTRA: 'HORAS_EXTRA',
+  SALUD: 'SALUD',
+  ACTUALIZACION_DATOS: 'ACTUALIZACION_DATOS',
+} as const;
+
+export type NovedadTipo = (typeof NovedadTipo)[keyof typeof NovedadTipo];
+
 export interface Novedad {
   id: number;
-  tipo: string;
+  tipo: NovedadTipo;
   estado: NovedadEstado;
   fechaInicio: Date;
   fechaFin?: Date;

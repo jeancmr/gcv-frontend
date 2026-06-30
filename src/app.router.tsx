@@ -4,11 +4,16 @@ import { NovedadesPage } from './GvcPlatform/pages/novedades/NovedadesPage';
 import { NovedadesFormPage } from './GvcPlatform/pages/NovedadesForm/NovedadesFormPage';
 import { AuthLayout } from './auth/layout/AuthLayout';
 import { LoginPage } from './auth/pages/Login/LoginPage';
+import { AuthenticatedRoute, NotAuthenticatedRoute } from './auth/routes/ProtectedRoutes';
 
 export const appRouter = createBrowserRouter([
   {
     path: '/',
-    element: <NovedadLayout />,
+    element: (
+      <AuthenticatedRoute>
+        <NovedadLayout />
+      </AuthenticatedRoute>
+    ),
     children: [
       { index: true, element: <Navigate to="/novedades" /> },
       {
@@ -22,10 +27,13 @@ export const appRouter = createBrowserRouter([
     ],
   },
 
-  //   AUTH routes
   {
     path: '/auth',
-    element: <AuthLayout />,
+    element: (
+      <NotAuthenticatedRoute>
+        <AuthLayout />
+      </NotAuthenticatedRoute>
+    ),
     children: [
       {
         index: true,
@@ -39,6 +47,6 @@ export const appRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Navigate to="/" />,
+    element: <Navigate to="/novedades" />,
   },
 ]);

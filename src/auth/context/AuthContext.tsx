@@ -7,6 +7,7 @@ interface IAuthContext {
   authStatus: AuthStatus;
   user: User | null;
 
+  checkAuthStatus: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }

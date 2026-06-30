@@ -6,6 +6,8 @@ import { NovedadesStatsCards } from '@/GvcPlatform/components/NovedadesStatsCard
 import { NovedadesSupervisorBulkBar } from '@/GvcPlatform/components/NovedadesSupervisorBulkBar';
 import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
 import { useNovedadesFilter } from '@/GvcPlatform/hooks/useNovedadesFilter';
+import { useNovedadesStats } from '@/GvcPlatform/hooks/useNovedadesStats';
+import { initialStats } from '@/GvcPlatform/libs/initial-novedades-stats';
 import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { UserRole } from '@/interfaces/user.interface';
 import { useState } from 'react';
@@ -14,6 +16,8 @@ export const NovedadesPage = () => {
   const { inputRef, currentEstado, currentTipo, hasActiveFilters, search, setSearchParams } =
     useNovedadesFilter();
   const { data: novedades = [], error } = useNovedades(currentEstado, currentTipo, search);
+  const { data: novedadesStats = initialStats } = useNovedadesStats();
+
   const { user } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -55,7 +59,7 @@ export const NovedadesPage = () => {
     <>
       <NovedadesHeader canExport={canExport} canCreate={canCreate} userRole={user?.rol} />
 
-      <NovedadesStatsCards novedades={novedades} />
+      <NovedadesStatsCards novedadesStats={novedadesStats} />
 
       <NovedadesFilter
         hasActiveFilters={hasActiveFilters}

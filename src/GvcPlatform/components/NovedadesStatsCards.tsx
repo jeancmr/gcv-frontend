@@ -1,17 +1,16 @@
-import { NovedadEstado, type Novedad } from '@/interfaces/novedad.interface';
-import { Clock, CheckCircle, XCircle, FileText } from 'lucide-react';
+import type { NovedadesStatsResponse } from '@/interfaces/novedad-stats.reponse';
+import { CheckCircle, Clock, FileText, XCircle } from 'lucide-react';
 
 interface StatsCardsProps {
-  novedades: Novedad[];
+  novedadesStats: NovedadesStatsResponse;
 }
 
-export const NovedadesStatsCards = ({ novedades }: StatsCardsProps) => {
-  const total = novedades.length;
-
-  const borradores = novedades.filter((n) => n.estado === NovedadEstado.BORRADOR).length;
-  const pendientes = novedades.filter((n) => n.estado === NovedadEstado.PENDIENTE).length;
-  const aprobadas = novedades.filter((n) => n.estado === NovedadEstado.APROBADA).length;
-  const rechazadas = novedades.filter((n) => n.estado === NovedadEstado.RECHAZADA).length;
+export const NovedadesStatsCards = ({ novedadesStats }: StatsCardsProps) => {
+  const total = novedadesStats.total;
+  const borradores = novedadesStats.borradores;
+  const pendientes = novedadesStats.pendientes;
+  const aprobadas = novedadesStats.aprobadas;
+  const rechazadas = novedadesStats.rechazadas;
 
   const stats = [
     {

@@ -21,6 +21,7 @@ export const useNovedades = (estado: string, tipo: string, search: string) => {
     mutationFn: ({ id, action }: UpdateNovedadParams) => updateNovedadAction(id, action),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['novedades'] });
+      await queryClient.invalidateQueries({ queryKey: ['novedades-stats'] });
     },
   });
 

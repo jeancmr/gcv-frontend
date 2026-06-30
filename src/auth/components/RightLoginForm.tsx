@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { loginAction } from '../actions/login.action';
 
 export const RightLoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,11 +18,16 @@ export const RightLoginForm = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    setTimeout(() => {
-      console.log('Email:', email);
-      console.log('Password:', password);
-      setIsLoading(false);
-    }, 2000);
+    loginAction(email, password)
+      .then((response) => {
+        console.log('Login successful:', response);
+      })
+      .catch((error) => {
+        console.error('Login failed:', error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
   return (
     <div className="flex flex-1 flex-col items-center justify-center p-6 sm:p-10 bg-background">

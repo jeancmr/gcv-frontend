@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { approveNovedadesMasivoAction } from '../actions/approve-novedades-masivo.action';
 import { getNovedadesAction } from '../actions/get-novedades.action';
 import { updateNovedadAction, type Action } from '../actions/update-novedad-estado.action';
 import { submitNovedadFormAction } from '../actions/submit-novedad-form.action';
@@ -18,6 +19,8 @@ type SubmitNovedadParams = {
   estado?: NovedadEstadoType;
   id?: number;
 };
+
+type ApproveNovedadesMasivoParams = number[];
 
 export const useNovedades = (estado: string = '', tipo: string = '', search: string = '') => {
   const queryClient = useQueryClient();
@@ -46,9 +49,18 @@ export const useNovedades = (estado: string = '', tipo: string = '', search: str
     },
   });
 
+  const approveNovedadesMasivoMutation = useMutation({
+    mutationFn: (ids: ApproveNovedadesMasivoParams) => approveNovedadesMasivoAction(ids),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['novedades'] });
+      await queryClient.invalidateQueries({ queryKey: ['novedades-stats'] });
+    },
+  });
+
   return {
     ...query,
     novedadMutation: updateNovedadMutation,
     submitNovedadMutation,
+    approveNovedadesMasivoMutation,
   };
 };

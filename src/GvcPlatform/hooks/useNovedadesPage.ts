@@ -35,9 +35,6 @@ export const useNovedadesPage = (novedades: Novedad[]) => {
     setSelectedIds(new Set());
   };
 
-  const handleBulkApprove = () => {
-    console.log(`Aprobar novedades con IDs: ${Array.from(selectedIds).join(', ')}`);
-  };
   return {
     canApprove,
     pendingFiltered,
@@ -45,6 +42,5 @@ export const useNovedadesPage = (novedades: Novedad[]) => {
     onSelect,
     selectAllPending,
     handleClearSelection,
-    handleBulkApprove,
   };
 };

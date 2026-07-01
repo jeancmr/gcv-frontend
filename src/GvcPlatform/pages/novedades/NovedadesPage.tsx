@@ -8,21 +8,40 @@ import { useNovedadesFilter } from '@/GvcPlatform/hooks/useNovedadesFilter';
 import { useNovedadesPage } from '@/GvcPlatform/hooks/useNovedadesPage';
 import { useNovedadesStats } from '@/GvcPlatform/hooks/useNovedadesStats';
 import { initialStats } from '@/GvcPlatform/libs/initial-novedades-stats';
+import { toast } from 'sonner';
 
 export const NovedadesPage = () => {
   const { inputRef, currentEstado, currentTipo, hasActiveFilters, search, setSearchParams } =
     useNovedadesFilter();
-  const { data: novedades = [], error } = useNovedades(currentEstado, currentTipo, search);
+
+  const {
+    data: novedades = [],
+    error,
+    approveNovedadesMasivoMutation: mutation,
+  } = useNovedades(currentEstado, currentTipo, search);
   const { data: novedadesStats = initialStats } = useNovedadesStats();
+
   const {
     canApprove,
     pendingFiltered,
     selectedIds,
     onSelect,
     selectAllPending,
-    handleBulkApprove,
     handleClearSelection,
   } = useNovedadesPage(novedades);
+
+  const handleBulkApprove = async () => {
+    const ids = Array.from(selectedIds).map(Number);
+    await mutation.mutateAsync(ids, {
+      onSuccess: () => {
+        toast.success(`Novedades aprobadas correctamente.`);
+        handleClearSelection();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+  };
 
   return (
     <>

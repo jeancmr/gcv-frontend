@@ -16,6 +16,7 @@ type UpdateNovedadParams = {
 type SubmitNovedadParams = {
   novedad: FormData;
   estado?: NovedadEstadoType;
+  id?: number;
 };
 
 export const useNovedades = (estado: string = '', tipo: string = '', search: string = '') => {
@@ -37,8 +38,8 @@ export const useNovedades = (estado: string = '', tipo: string = '', search: str
   });
 
   const submitNovedadMutation = useMutation({
-    mutationFn: ({ novedad, estado = NovedadEstado.PENDIENTE }: SubmitNovedadParams) =>
-      submitNovedadFormAction(novedad, estado),
+    mutationFn: ({ novedad, estado = NovedadEstado.PENDIENTE, id }: SubmitNovedadParams) =>
+      submitNovedadFormAction(novedad, estado, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['novedades'] });
       queryClient.invalidateQueries({ queryKey: ['novedades-stats'] });

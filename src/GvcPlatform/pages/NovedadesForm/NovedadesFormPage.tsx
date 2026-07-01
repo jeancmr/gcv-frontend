@@ -9,15 +9,22 @@ import { novedadSchema, type FormData } from '@/GvcPlatform/schemas/novedad-form
 import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Calendar, FileText } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import type { Novedad } from '@/interfaces/novedad.interface';
 
 export const NovedadesFormPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { submitNovedadMutation: mutation } = useNovedades();
   const [isDraftDialogOpen, setIsDraftDialogOpen] = useState(false);
+
+  const locationStateNovedad = (location.state as { novedad?: Novedad } | null)?.novedad;
+  const isEditing = !!locationStateNovedad;
+
+  const editingId = isEditing ? locationStateNovedad?.id : undefined;
 
   const defaultValues = useMemo<FormData>(
     () => ({
@@ -33,6 +40,7 @@ export const NovedadesFormPage = () => {
     register,
     handleSubmit,
     control,
+    reset,
     trigger,
     getValues,
     formState: { errors, isSubmitting },
@@ -44,9 +52,24 @@ export const NovedadesFormPage = () => {
 
   const form = useWatch({ control });
 
+  useEffect(() => {
+    const novedad = locationStateNovedad;
+
+    if (!novedad) {
+      return;
+    }
+
+    reset({
+      tipo: novedad.tipo,
+      fechaInicio: novedad.fechaInicio,
+      fechaFin: novedad.fechaFin ?? '',
+      descripcion: novedad.descripcion,
+    });
+  }, [locationStateNovedad, reset]);
+
   const onSubmit = async (values: FormData) => {
     await mutation.mutateAsync(
-      { novedad: values, estado: NovedadEstado.PENDIENTE },
+      { novedad: values, estado: NovedadEstado.PENDIENTE, id: editingId },
       {
         onSuccess: () => {
           toast.success('Novedad registrada correctamente');
@@ -69,7 +92,7 @@ export const NovedadesFormPage = () => {
     const values = getValues();
 
     await mutation.mutateAsync(
-      { novedad: values, estado: NovedadEstado.BORRADOR },
+      { novedad: values, estado: NovedadEstado.BORRADOR, id: editingId },
       {
         onSuccess: () => {
           toast.success('Novedad guardada como borrador');
@@ -303,7 +326,7 @@ export const NovedadesFormPage = () => {
                   Enviando…
                 </>
               ) : (
-                'Enviar novedad'
+                'Registrar novedad'
               )}
             </Button>
           </div>

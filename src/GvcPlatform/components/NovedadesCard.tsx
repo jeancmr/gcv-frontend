@@ -2,6 +2,9 @@ import { StatusBadge, TipoBadge } from '@/components/custom/CustomStatusBadge';
 import { Button } from '@/components/ui/button';
 import { NovedadEstado, type Novedad } from '@/interfaces/novedad.interface';
 import { Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { useAuth } from '@/auth/hooks/useAuth';
+import { UserRole } from '@/interfaces/user.interface';
 import { useNovedades } from '../hooks/useNovedades';
 import { useNovedadesFilter } from '../hooks/useNovedadesFilter';
 import { toast } from 'sonner';
@@ -29,9 +32,12 @@ export const NovedadesCard = ({
   canApprove,
   onSelect,
 }: NovedadCardProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { currentEstado, currentTipo, search } = useNovedadesFilter();
 
   const { novedadMutation } = useNovedades(currentEstado, currentTipo, search);
+  const canEdit = user?.rol === UserRole.COLABORADOR && novedad.estado === NovedadEstado.BORRADOR;
 
   const onApprove = async (id: number) => {
     novedadMutation.mutate(
@@ -151,6 +157,18 @@ export const NovedadesCard = ({
               className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
             >
               Aprobar
+            </Button>
+          </div>
+        )}
+
+        {canEdit && (
+          <div className="flex gap-2 justify-end">
+            <Button
+              size="xs"
+              onClick={() => navigate(`/nueva-novedad/${novedad.id}`, { state: { novedad } })}
+              className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+            >
+              Editar
             </Button>
           </div>
         )}

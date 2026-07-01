@@ -24,6 +24,10 @@ export const appRouter = createBrowserRouter([
         path: 'nueva-novedad',
         element: <NovedadesFormPage />,
       },
+      {
+        path: 'nueva-novedad/:id',
+        element: <NovedadesFormPage />,
+      },
     ],
   },
 

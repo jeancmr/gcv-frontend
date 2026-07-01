@@ -10,11 +10,12 @@ import type { FormData } from '../schemas/novedad-form.schema';
 export const submitNovedadFormAction = async (
   novedad: FormData,
   estado: NovedadEstadoType = NovedadEstado.PENDIENTE,
+  id?: number,
 ): Promise<CreateNovedadResponse> => {
   try {
     const { data } = await gvcPlatformApi<CreateNovedadResponse>({
-      url: '/novedad',
-      method: 'POST',
+      url: id ? `/novedad/${id}` : '/novedad',
+      method: id ? 'PATCH' : 'POST',
       data: {
         ...novedad,
         estado,

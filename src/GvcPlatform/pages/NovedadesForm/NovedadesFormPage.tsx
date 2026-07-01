@@ -58,7 +58,6 @@ export const NovedadesFormPage = () => {
     if (!novedad) {
       return;
     }
-
     reset({
       tipo: novedad.tipo,
       fechaInicio: novedad.fechaInicio,
@@ -163,7 +162,6 @@ export const NovedadesFormPage = () => {
                     <input
                       type="radio"
                       value={t.value}
-                      checked={form.tipo === t.value}
                       {...register('tipo')}
                       className="mt-0.5 h-4 w-4 accent-primary shrink-0"
                     />

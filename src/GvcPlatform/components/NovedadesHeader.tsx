@@ -2,9 +2,11 @@ import { useAuth } from '@/auth/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { UserRole } from '@/interfaces/user.interface';
 import { Download, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 export const NovedadesHeader = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const canExport = user?.rol === UserRole.RRHH;
   const canCreate = user?.rol === UserRole.COLABORADOR;
@@ -31,7 +33,7 @@ export const NovedadesHeader = () => {
       <div className="flex items-center gap-2">
         {canCreate && (
           <Button
-            onClick={() => console.log('Crear novedad')}
+            onClick={() => navigate('/nueva-novedad')}
             size="lg"
             className="flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition-opacity"
           >

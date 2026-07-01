@@ -2,10 +2,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getNovedadesAction } from '../actions/get-novedades.action';
 import { updateNovedadAction, type Action } from '../actions/update-novedad-estado.action';
 import { submitNovedadFormAction } from '../actions/submit-novedad-form.action';
+import {
+  NovedadEstado,
+  type NovedadEstado as NovedadEstadoType,
+} from '@/interfaces/novedad.interface';
+import type { FormData } from '../schemas/novedad-form.schema';
 
 type UpdateNovedadParams = {
   id: number;
   action: Action;
+};
+
+type SubmitNovedadParams = {
+  novedad: FormData;
+  estado?: NovedadEstadoType;
 };
 
 export const useNovedades = (estado: string = '', tipo: string = '', search: string = '') => {
@@ -27,7 +37,8 @@ export const useNovedades = (estado: string = '', tipo: string = '', search: str
   });
 
   const submitNovedadMutation = useMutation({
-    mutationFn: submitNovedadFormAction,
+    mutationFn: ({ novedad, estado = NovedadEstado.PENDIENTE }: SubmitNovedadParams) =>
+      submitNovedadFormAction(novedad, estado),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['novedades'] });
       queryClient.invalidateQueries({ queryKey: ['novedades-stats'] });

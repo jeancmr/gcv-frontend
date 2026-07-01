@@ -1,16 +1,24 @@
 import { gvcPlatformApi } from '@/api/gvc-platform.api';
+import {
+  NovedadEstado,
+  type NovedadEstado as NovedadEstadoType,
+} from '@/interfaces/novedad.interface';
 import type { CreateNovedadResponse } from '@/interfaces/create-novedad.response';
 import type { AxiosError } from 'axios';
 import type { FormData } from '../schemas/novedad-form.schema';
 
 export const submitNovedadFormAction = async (
   novedad: FormData,
+  estado: NovedadEstadoType = NovedadEstado.PENDIENTE,
 ): Promise<CreateNovedadResponse> => {
   try {
     const { data } = await gvcPlatformApi<CreateNovedadResponse>({
       url: '/novedad',
       method: 'POST',
-      data: novedad,
+      data: {
+        ...novedad,
+        estado,
+      },
     });
 
     return data;

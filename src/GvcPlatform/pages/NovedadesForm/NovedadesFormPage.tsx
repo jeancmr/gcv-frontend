@@ -2,12 +2,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { NovedadesAlertDialog } from '@/GvcPlatform/components/NovedadesAlertDialog';
 import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
 import { NOVEDAD_TIPOS } from '@/GvcPlatform/libs/novedad-tipos';
 import { novedadSchema, type FormData } from '@/GvcPlatform/schemas/novedad-form.schema';
+import { NovedadEstado } from '@/interfaces/novedad.interface';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Calendar, FileText } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -15,6 +17,7 @@ import { toast } from 'sonner';
 export const NovedadesFormPage = () => {
   const navigate = useNavigate();
   const { submitNovedadMutation: mutation } = useNovedades();
+  const [isDraftDialogOpen, setIsDraftDialogOpen] = useState(false);
 
   const defaultValues = useMemo<FormData>(
     () => ({
@@ -22,7 +25,6 @@ export const NovedadesFormPage = () => {
       fechaInicio: '',
       fechaFin: '',
       descripcion: '',
-      adjunto: null,
     }),
     [],
   );
@@ -31,6 +33,8 @@ export const NovedadesFormPage = () => {
     register,
     handleSubmit,
     control,
+    trigger,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     defaultValues,
@@ -41,14 +45,52 @@ export const NovedadesFormPage = () => {
   const form = useWatch({ control });
 
   const onSubmit = async (values: FormData) => {
-    await mutation.mutateAsync(values, {
-      onSuccess: () => {
-        toast.success('Novedad registrada correctamente');
+    await mutation.mutateAsync(
+      { novedad: values, estado: NovedadEstado.PENDIENTE },
+      {
+        onSuccess: () => {
+          toast.success('Novedad registrada correctamente');
+          navigate('/novedades');
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
       },
-      onError: (error) => {
-        toast.error(error.message);
+    );
+  };
+
+  const handleSaveDraft = async () => {
+    const isValid = await trigger();
+
+    if (!isValid) {
+      return;
+    }
+
+    const values = getValues();
+
+    await mutation.mutateAsync(
+      { novedad: values, estado: NovedadEstado.BORRADOR },
+      {
+        onSuccess: () => {
+          toast.success('Novedad guardada como borrador');
+          setIsDraftDialogOpen(false);
+          navigate('/novedades');
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
       },
-    });
+    );
+  };
+
+  const handleCancelClick = async () => {
+    const isValid = await trigger();
+
+    if (!isValid) {
+      return;
+    }
+
+    setIsDraftDialogOpen(true);
   };
 
   return (
@@ -74,7 +116,6 @@ export const NovedadesFormPage = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="space-y-6">
-          {/* ── TIPO ── */}
           <section className="rounded-lg border border-border bg-card p-5">
             <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
               <FileText size={15} className="text-primary" aria-hidden="true" />
@@ -235,7 +276,7 @@ export const NovedadesFormPage = () => {
             <Button
               size="lg"
               type="button"
-              onClick={() => navigate('/novedades')}
+              onClick={handleCancelClick}
               className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
               Cancelar
@@ -268,6 +309,12 @@ export const NovedadesFormPage = () => {
           </div>
         </div>
       </form>
+
+      <NovedadesAlertDialog
+        isDraftDialogOpen={isDraftDialogOpen}
+        setIsDraftDialogOpen={setIsDraftDialogOpen}
+        handleSaveDraft={handleSaveDraft}
+      />
     </div>
   );
 };

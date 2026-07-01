@@ -18,6 +18,7 @@ export const NovedadesPage = () => {
     data: novedades = [],
     error,
     approveNovedadesMasivoMutation: mutation,
+    exportNovedadesCsvMutation,
   } = useNovedades(currentEstado, currentTipo, search);
   const { data: novedadesStats = initialStats } = useNovedadesStats();
 
@@ -43,9 +44,31 @@ export const NovedadesPage = () => {
     });
   };
 
+  const handleExportCsv = async () => {
+    await exportNovedadesCsvMutation.mutateAsync(undefined, {
+      onSuccess: ({ blob, filename }) => {
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+        toast.success('CSV exportado correctamente.');
+      },
+      onError: (mutationError) => {
+        toast.error(mutationError.message);
+      },
+    });
+  };
+
   return (
     <>
-      <NovedadesHeader />
+      <NovedadesHeader
+        onExportCsv={handleExportCsv}
+        isExportingCsv={exportNovedadesCsvMutation.isPending}
+      />
 
       <NovedadesStatsCards novedadesStats={novedadesStats} />
 

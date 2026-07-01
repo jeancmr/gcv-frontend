@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { approveNovedadesMasivoAction } from '../actions/approve-novedades-masivo.action';
+import {
+  exportNovedadesCsvAction,
+  type ExportNovedadesCsvResponse,
+} from '../actions/export-novedades-csv.action';
 import { getNovedadesAction } from '../actions/get-novedades.action';
 import { updateNovedadAction, type Action } from '../actions/update-novedad-estado.action';
 import { submitNovedadFormAction } from '../actions/submit-novedad-form.action';
@@ -57,10 +61,15 @@ export const useNovedades = (estado: string = '', tipo: string = '', search: str
     },
   });
 
+  const exportNovedadesCsvMutation = useMutation<ExportNovedadesCsvResponse, Error, void>({
+    mutationFn: exportNovedadesCsvAction,
+  });
+
   return {
     ...query,
     novedadMutation: updateNovedadMutation,
     submitNovedadMutation,
     approveNovedadesMasivoMutation,
+    exportNovedadesCsvMutation,
   };
 };

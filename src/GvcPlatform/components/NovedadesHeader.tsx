@@ -4,7 +4,12 @@ import { UserRole } from '@/interfaces/user.interface';
 import { Download, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
-export const NovedadesHeader = () => {
+interface NovedadesHeaderProps {
+  onExportCsv?: () => void;
+  isExportingCsv?: boolean;
+}
+
+export const NovedadesHeader = ({ onExportCsv, isExportingCsv = false }: NovedadesHeaderProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -45,11 +50,12 @@ export const NovedadesHeader = () => {
         {canExport && (
           <Button
             size="lg"
-            onClick={() => console.log('Exportar CSV')}
+            onClick={onExportCsv}
+            disabled={isExportingCsv}
             className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
           >
             <Download size={15} aria-hidden="true" />
-            Exportar CSV
+            {isExportingCsv ? 'Exportando...' : 'Exportar CSV'}
           </Button>
         )}
       </div>

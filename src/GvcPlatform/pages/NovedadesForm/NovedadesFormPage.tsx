@@ -2,36 +2,55 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useNovedades } from '@/GvcPlatform/hooks/useNovedades';
 import { NOVEDAD_TIPOS } from '@/GvcPlatform/libs/novedad-tipos';
-import type { NovedadTipo } from '@/interfaces/novedad.interface';
+import { novedadSchema, type FormData } from '@/GvcPlatform/schemas/novedad-form.schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Calendar, FileText } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-
-interface FormData {
-  tipo: NovedadTipo | '';
-  fechaInicio: string;
-  fechaFin: string;
-  descripcion: string;
-  adjunto: File | null;
-}
+import { toast } from 'sonner';
 
 export const NovedadesFormPage = () => {
-  const [form, setForm] = useState<FormData>({
-    tipo: '',
-    fechaInicio: '',
-    fechaFin: '',
-    descripcion: '',
-    adjunto: null,
-  });
   const navigate = useNavigate();
+  const { submitNovedadMutation: mutation } = useNovedades();
 
-  const submitting = false;
+  const defaultValues = useMemo<FormData>(
+    () => ({
+      tipo: NOVEDAD_TIPOS[0].value,
+      fechaInicio: '',
+      fechaFin: '',
+      descripcion: '',
+      adjunto: null,
+    }),
+    [],
+  );
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log('Enviar novedad');
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    defaultValues,
+    resolver: zodResolver(novedadSchema),
+    mode: 'onSubmit',
+  });
+
+  const form = useWatch({ control });
+
+  const onSubmit = async (values: FormData) => {
+    await mutation.mutateAsync(values, {
+      onSuccess: () => {
+        toast.success('Novedad registrada correctamente');
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
   };
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Back */}
@@ -53,7 +72,7 @@ export const NovedadesFormPage = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="space-y-6">
           {/* ── TIPO ── */}
           <section className="rounded-lg border border-border bg-card p-5">
@@ -79,11 +98,9 @@ export const NovedadesFormPage = () => {
                   >
                     <input
                       type="radio"
-                      name="tipo"
                       value={t.value}
                       checked={form.tipo === t.value}
-                      // onChange={() => update('tipo', t.value)}
-                      // aria-invalid={!!errors.tipo}
+                      {...register('tipo')}
                       className="mt-0.5 h-4 w-4 accent-primary shrink-0"
                     />
                     <div>
@@ -94,7 +111,7 @@ export const NovedadesFormPage = () => {
                 ))}
               </div>
             </fieldset>
-            {/* {errors.tipo && <FieldError message={errors.tipo} id="error-tipo" />} */}
+            {errors.tipo && <p className="mt-2 text-xs text-destructive">{errors.tipo.message}</p>}
           </section>
 
           {/* ── FECHAS ── */}
@@ -115,16 +132,16 @@ export const NovedadesFormPage = () => {
                 <Input
                   id="fechaInicio"
                   type="date"
-                  value={form.fechaInicio}
-                  // onChange={(e) => update('fechaInicio', e.target.value)}
-                  // aria-invalid={!!errors.fechaInicio}
-                  // aria-describedby={errors.fechaInicio ? 'error-fechaInicio' : undefined}
-                  max={new Date().toISOString().split('T')[0]}
+                  {...register('fechaInicio')}
+                  aria-invalid={!!errors.fechaInicio}
+                  aria-describedby={errors.fechaInicio ? 'error-fechaInicio' : undefined}
                   className="h-10"
                 />
-                {/* {errors.fechaInicio && (
-                        <FieldError message={errors.fechaInicio} id="error-fechaInicio" />
-                      )} */}
+                {errors.fechaInicio && (
+                  <p id="error-fechaInicio" className="text-xs text-destructive">
+                    {errors.fechaInicio.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -137,15 +154,17 @@ export const NovedadesFormPage = () => {
                 <Input
                   id="fechaFin"
                   type="date"
-                  value={form.fechaFin}
-                  // onChange={(e) => update('fechaFin', e.target.value)}
-                  // aria-invalid={!!errors.fechaFin}
-                  // aria-describedby={errors.fechaFin ? 'error-fechaFin' : undefined}
+                  {...register('fechaFin')}
+                  aria-invalid={!!errors.fechaFin}
+                  aria-describedby={errors.fechaFin ? 'error-fechaFin' : undefined}
                   min={form.fechaInicio || undefined}
-                  max={new Date().toISOString().split('T')[0]}
                   className="h-10"
                 />
-                {/* {errors.fechaFin && <FieldError message={errors.fechaFin} id="error-fechaFin" />} */}
+                {errors.fechaFin && (
+                  <p id="error-fechaFin" className="text-xs text-destructive">
+                    {errors.fechaFin.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -181,17 +200,18 @@ export const NovedadesFormPage = () => {
               <Textarea
                 id="descripcion"
                 rows={4}
-                value={form.descripcion}
-                // onChange={(e) => update('descripcion', e.target.value)}
+                {...register('descripcion')}
                 placeholder="Describa la novedad con el mayor detalle posible…"
-                // aria-invalid={!!errors.descripcion}
-                // aria-describedby={errors.descripcion ? 'error-descripcion' : 'desc-hint'}
+                aria-invalid={!!errors.descripcion}
+                aria-describedby={errors.descripcion ? 'error-descripcion' : 'desc-hint'}
                 maxLength={500}
                 className="resize-none"
               />
-              {/* <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center">
                 {errors.descripcion ? (
-                  <FieldError message={errors.descripcion} id="error-descripcion" />
+                  <p id="error-descripcion" className="text-xs text-destructive">
+                    {errors.descripcion.message}
+                  </p>
                 ) : (
                   <span id="desc-hint" className="text-xs text-muted-foreground">
                     Mínimo 10 caracteres
@@ -199,30 +219,34 @@ export const NovedadesFormPage = () => {
                 )}
                 <span
                   className={`text-xs ${
-                    form.descripcion.length > 450 ? 'text-destructive' : 'text-muted-foreground'
+                    (form.descripcion ?? '').length > 450
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
                   }`}
                 >
-                  {form.descripcion.length}/500
+                  {(form.descripcion ?? '').length}/500
                 </span>
-              </div> */}
+              </div>
             </div>
           </section>
 
           {/* ── SUBMIT ── */}
           <div className="flex items-center justify-end gap-3 pb-6">
-            <button
+            <Button
+              size="lg"
               type="button"
               onClick={() => navigate('/novedades')}
               className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={submitting}
+              size="lg"
+              disabled={isSubmitting}
               className="flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-6 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
             >
-              {submitting ? (
+              {isSubmitting ? (
                 <>
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                     <circle
@@ -240,7 +264,7 @@ export const NovedadesFormPage = () => {
               ) : (
                 'Enviar novedad'
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </form>

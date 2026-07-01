@@ -1,13 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getNovedadesAction } from '../actions/get-novedades.action';
 import { updateNovedadAction, type Action } from '../actions/update-novedad-estado.action';
+import { submitNovedadFormAction } from '../actions/submit-novedad-form.action';
 
 type UpdateNovedadParams = {
   id: number;
   action: Action;
 };
 
-export const useNovedades = (estado: string, tipo: string, search: string) => {
+export const useNovedades = (estado: string = '', tipo: string = '', search: string = '') => {
   const queryClient = useQueryClient();
 
   const query = useQuery({
@@ -25,8 +26,17 @@ export const useNovedades = (estado: string, tipo: string, search: string) => {
     },
   });
 
+  const submitNovedadMutation = useMutation({
+    mutationFn: submitNovedadFormAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['novedades'] });
+      queryClient.invalidateQueries({ queryKey: ['novedades-stats'] });
+    },
+  });
+
   return {
     ...query,
     novedadMutation: updateNovedadMutation,
+    submitNovedadMutation,
   };
 };
